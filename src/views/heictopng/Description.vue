@@ -18,7 +18,7 @@
                 <p class="text-sm">{{ item.description }}</p>
             </section>
         </section>
-        <h2 class="my-2 text-xl font-bold text-center">Difference Between HEIC, JPEG, and PNG</h2>
+        <!-- <h2 class="my-2 text-xl font-bold text-center">Difference Between HEIC, JPEG, and PNG</h2> -->
 
 
 

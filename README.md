@@ -1,29 +1,35 @@
-# threeJs
+# HEIC/HEIF to PNG Converter
 
-This template should help get you started developing with Vue 3 in Vite.
+## Introduction
 
-## Recommended IDE Setup
+This project provides a user-friendly solution to convert HEIC/HEIF images to PNG format while maintaining high quality and preserving the integrity of the original files. Designed to be simple and secure, our tool ensures that your images are converted with precision without the need for complicated processes or concerns about privacy.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Features
 
-## Customize configuration
+### Simple to Use
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- Convert HEIC/HEIF to PNG with high quality and lossless compression.
 
-## Project Setup
+### Convert Multiple Files at Once
 
-```sh
-npm install
-```
+- Ability to convert multiple HEIC/HEIF files simultaneously and download them as a single zip file.
 
-### Compile and Hot-Reload for Development
+### Keep Your Files Secure
 
-```sh
-npm run dev
-```
+- As an offline solution, your files are processed on your device without being uploaded to any server, ensuring your data remains secure.
 
-### Compile and Minify for Production
+### Keep Original Size & Quality
 
-```sh
-npm run build
-```
+- Files retain their original dimensions and quality; no resizing or cropping occurs during conversion.
+
+### No Registration Required
+
+- Use our conversion tool immediately, with no need for creating an account or disclosing personal information.
+
+### No Software Download Needed
+
+- Access the HEIC/HEIF to PNG conversion service directly from our website without the need to install any additional software.
+
+### Convenient File Saving Options
+
+- Save your converted PNG files directly to your computer, or upload them to Google Drive or Dropbox for easy access and storage.
