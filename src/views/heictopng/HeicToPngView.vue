@@ -32,13 +32,13 @@
                         <el-progress :percentage="row.progress" />
                     </template>
                 </el-table-column>
-                <!-- <el-table-column label="Actions">
+                <el-table-column label="Actions">
                     <template #default="{ row }">
-                        <span class="px-1 cursor-pointer select-none text-blue-500" >预览</span>
+                        <!-- <span class="px-1 cursor-pointer select-none text-blue-500" >预览</span> -->
                         <span class="px-1 cursor-pointer select-none text-green-500">下载</span>
-                        <span class="px-1 cursor-pointer select-none text-red-500">删除</span>
+                        <!-- <span class="px-1 cursor-pointer select-none text-red-500">删除</span> -->
                     </template>
-                </el-table-column> -->
+                </el-table-column>
             </el-table>
         </el-drawer>
 
@@ -67,12 +67,12 @@
             <el-button plain v-show="isConvertedAll" @click="downloadImages">
                 下载
             </el-button>
-            <el-button plain @click="showImageList = true">
+            <!-- <el-button plain @click="showImageList = true">
                 查看
             </el-button>
             <el-button plain @click="removeExif">
                 移除
-            </el-button>
+            </el-button> -->
 
         </section>
 
