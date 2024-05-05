@@ -31,7 +31,9 @@ jobs:
 
       - name: Deploy to deploy branch
         run: |
-          git checkout -b deploy
-          git add .
+          git checkout -b deploy --quiet 
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add . 
           git commit -m "Build and deploy"
           git push origin deploy
