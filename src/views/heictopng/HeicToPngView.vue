@@ -35,7 +35,7 @@
                 <el-table-column label="Actions">
                     <template #default="{ row }">
                         <!-- <span class="px-1 cursor-pointer select-none text-blue-500" >预览</span> -->
-                        <span class="px-1 cursor-pointer select-none text-green-500">下载</span>
+                        <span @click="downloadImage(row)" class="px-1 cursor-pointer select-none text-green-500">下载</span>
                         <!-- <span class="px-1 cursor-pointer select-none text-red-500">删除</span> -->
                     </template>
                 </el-table-column>
@@ -234,7 +234,9 @@ const downloadImages = () => {
             console.error('Failed to generate the zip file:', error);
         });
 };
-
+const downloadImage = (item) => {
+    
+}
 // todo 移除 exif
 // crop changedpi
 /**
