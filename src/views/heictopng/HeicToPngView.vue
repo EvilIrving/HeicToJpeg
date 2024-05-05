@@ -1,22 +1,22 @@
 <template>
     <div class="mx-auto w-1/2 mt-4">
-        <h1 class="text-3xl font-bold text-center my-5">HEIC Images Free Online Converter</h1>
+        <h1 class="text-3xl font-bold text-center my-5">HEIC Images Free Offline Converter</h1>
         <el-upload :show-file-list="false" v-model:file-list="imageList" action="#" :http-request="handleHttpUpload"
             :before-upload="beforeUpload" :on-exceed="handleExceed" :on-success="uploadSuccess"
             :on-progress="handleProgress" drag multiple :limit="limit" :accept="fileType.join(',')">
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
             <div class="el-upload__text">
-                拖拽文件到这里或 <em>点击选择文件</em>
+                Drag & drop or <em>click here</em> to upload your .heic images
             </div>
             <template #tip>
-                <div class="el-upload__tip">
+                <!-- <div class="el-upload__tip">
                     上传文件支持 {{ fileType.join(' / ').replace('image/', '') }} 格式，单个文件大小不超过 {{ fileSize }}MB，且文件数量不超过 {{
             limit }} 个
-                </div>
+                </div> -->
             </template>
         </el-upload>
 
-        <el-drawer v-model="showImageList" title="图片列表" direction="rtl" size="40%">
+        <el-drawer v-model="showImageList" title="Images List" direction="rtl" size="40%">
             <el-table v-if="isImageSelected" :data="imageList">
                 <el-table-column prop="name" label="Name" width="90" show-overflow-tooltip
                     align="center"></el-table-column>
@@ -27,15 +27,16 @@
                     <template #default="{ row }">{{ row?.convertedSize ? ((row.convertedSize) / 1024 /
             1024).toFixed(2) : 'converting' }}</template>
                 </el-table-column>
-                <el-table-column prop="progress" label="Upload Progress">
+                <el-table-column prop="progress" label="Progress">
                     <template #default="{ row }">
                         <el-progress :percentage="row.progress" />
                     </template>
                 </el-table-column>
                 <el-table-column label="Actions">
                     <template #default="{ row }">
-                        <!-- <span class="px-1 cursor-pointer select-none text-blue-500" >预览</span> -->
-                        <span @click="downloadImage(row)" class="px-1 cursor-pointer select-none text-green-500">下载</span>
+                        <span v-show="!row.converted" class="px-1 cursor-pointer select-none">converting</span>
+                        <span v-show="row.converted" @click="downloadImage(row)"
+                            class="px-1 cursor-pointer select-none text-green-500">download</span>
                         <!-- <span class="px-1 cursor-pointer select-none text-red-500">删除</span> -->
                     </template>
                 </el-table-column>
@@ -43,34 +44,37 @@
         </el-drawer>
 
         <section v-show="isImageSelected" class="flex flex-col w-1/2 ">
-            <h4 class="my-2">参数调整</h4>
+            <h4 class="my-2">Options</h4>
             <section class="flex items-center ">
-                <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap flex-1">格式</span>
-                <el-select class="ml-4 flex-007" v-model="format" placeholder="请选择转换格式">
+                <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap flex-1">Format</span>
+                <el-select class="ml-4 flex-007" v-model="format" placeholder="please select format">
                     <el-option label="PNG" value="image/png"></el-option>
                     <el-option label="JPEG" value="image/jpeg"></el-option>
-                    <el-option label="GIF" value="image/gif"></el-option>
+                    <!-- <el-option label="GIF" value="image/gif"></el-option> -->
                 </el-select>
+
+                <!-- <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap flex-1">gifInterval</span>
+                <el-slider class="ml-7 flex-007" v-model="gifInterval" :min="0.1" :max="1" :step="0.1" /> -->
             </section>
             <section class="flex items-center">
-                <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap flex-1">质量</span>
-                <el-slider class="ml-4 flex-007" v-model="quality" :min="0" :max="1" :step="0.1">质量</el-slider>
+                <span class="text-sm overflow-hidden text-ellipsis whitespace-nowrap flex-1">Quality</span>
+                <el-slider class="ml-4 flex-007" v-model="quality" :min="0" :max="1" :step="0.1">Quality</el-slider>
             </section>
         </section>
         <section class="mt-4">
             <el-button :loading="loading" plain @click="convertImages" v-show="isImageSelected">
-                转换
+                Convert
             </el-button>
             <el-button plain @click="previewImages" v-show="isConvertedAll">
-                预览
+                Preview
             </el-button>
             <el-button plain v-show="isConvertedAll" @click="downloadImages">
-                下载
+                Download All
             </el-button>
-            <!-- <el-button plain @click="showImageList = true">
-                查看
+            <el-button v-show="isConvertedAll" plain @click="showImageList = true">
+                Check List
             </el-button>
-            <el-button plain @click="removeExif">
+            <!-- <el-button plain @click="removeExif">
                 移除
             </el-button> -->
 
@@ -104,10 +108,10 @@ const beforeUpload = rawFile => {
     const imgSize = rawFile.size / 1024 / 1024 < fileSize;
     const imgType = fileType.includes(rawFile.type);
     if (!imgType)
-        ElMessage.error(`上传文件只支持 ${fileType.join(',').replace('image/', '')} 格式！`)
+        ElMessage.error(`just surpport ${fileType.join(',').replace('image/', '')} format！`)
     if (!imgSize)
         setTimeout(() => {
-            ElMessage.error(`上传文件大小不能超过 ${fileSize}MB！`)
+            ElMessage.error(`file size should not exceed ${fileSize}MB！`)
         }, 0);
     return imgType && imgSize;
 };
@@ -152,7 +156,7 @@ const uploadSuccess = (files) => {
  * */
 const handleExceed = (files) => {
     ElMessage.warning(
-        `每次最多转换 ${max} 张图片，已选择 ${files.length} 张，共 ${files.length + imageList.value.length} 张`
+        `You can only upload up to ${max} files, but,you uploaded ${files.length + imageList.value.length} files.`
     )
 }
 
@@ -166,7 +170,8 @@ const previewImages = () => {
 
 // 图片转换逻辑
 const format = ref('image/png');
-const quality = ref(0.5);
+const quality = ref(0.8);
+// const gifInterval = ref(0.8);
 
 const isImageSelected = computed(() => {
     return imageList.value.length > 0;
@@ -189,6 +194,7 @@ const convertImages = () => {
     showImageList.value = true
     // Convert image format and update progress
     const option = { toType: format.value, quality: quality.value }
+    // format.value === 'image/gif' ? option.gifInterval = 0.3 : option.quality = quality.value
     let convertedCount = 0; // 记录已转换成功的图片数量
 
     imageList.value.forEach((item) => {
@@ -225,17 +231,23 @@ const downloadImages = () => {
     zip.generateAsync({ type: 'blob' })
         .then((zipBlob) => {
             // Create a download link and trigger the download
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(zipBlob);
-            link.download = 'converted_images.zip';
-            link.click();
+            saveAsfile(zipBlob, 'images.zip');
         })
         .catch((error) => {
             console.error('Failed to generate the zip file:', error);
         });
 };
+
+
 const downloadImage = (item) => {
     console.log(item, 'download image');
+    saveAsfile(item.convertedImage, `${item.name.split('.')[0]}.${format.value.replace('image/', '')}`);
+}
+const saveAsfile = (blob, name) => {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = name;
+    link.click();
 }
 // todo 移除 exif
 // crop changedpi
