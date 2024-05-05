@@ -235,7 +235,7 @@ const downloadImages = () => {
         });
 };
 const downloadImage = (item) => {
-    
+    console.log(item, 'download image');
 }
 // todo 移除 exif
 // crop changedpi
