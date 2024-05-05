@@ -4,11 +4,11 @@ import HomeView from '../views/HomeView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    },
+    // {
+    //   path: '/',
+    //   name: 'home',
+    //   component: HomeView
+    // },
     {
       path: '/command',
       name: 'command',
@@ -20,7 +20,7 @@ const router = createRouter({
       component: () => import('../views/flyweight/FlyweightView.vue')
     },
     {
-      path: '/heictopng',
+      path: '/',
       name: 'heictopng',
       component: () => import('../views/heictopng/HeicToPngView.vue')
     },
