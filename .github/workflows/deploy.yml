@@ -15,7 +15,6 @@ jobs:
       # 安装依赖并打包
       - name: install and build
         run: |
-          # npm i -g pnpm
           npm install
           npm build
       # 自动部署到pages分支
