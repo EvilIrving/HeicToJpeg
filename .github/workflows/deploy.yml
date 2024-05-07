@@ -16,7 +16,7 @@ jobs:
       - name: install and build
         run: |
           npm install
-          npm build
+          npm run build
       # 自动部署到pages分支
       - name: deploy to pages
         uses: peaceiris/actions-gh-pages@v3
