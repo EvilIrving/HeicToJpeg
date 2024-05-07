@@ -82,6 +82,18 @@
 
         <el-image-viewer v-if="imgViewVisible" :url-list="viewImageUrls" @close="imgViewVisible = false" />
         <description />
+
+
+
+        Batch Convert HEIC to PNG or JPG For FREE
+        It's compatible with all platforms, requires no registration, and is completely free with unlimited access.
+        Enjoy higher compatibility without the need for installation.
+        Convert HEIC to JPG or PNG
+        Convert your HEIC files to JPG, PNG, or GIF effortlessly with our powerful, user-friendly online converter.
+        Enjoy higher
+        compatibility without the need for installation. It's compatible with all platforms, requires no registration,
+        and is
+        completely free with unlimited access. Convert your HEIC images now!
     </div>
 </template>
 
