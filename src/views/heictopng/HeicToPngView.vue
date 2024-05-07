@@ -1,18 +1,19 @@
 <template>
     <div class="mx-auto w-1/2 mt-4">
-        <h1 class="text-3xl font-bold text-center my-5">HEIC Images Free Offline Converter</h1>
+        <h1 class="text-3xl font-bold text-center my-5">HEIC/HEIF Simple, Free, and Offline Converter</h1>
         <el-upload :show-file-list="false" v-model:file-list="imageList" action="#" :http-request="handleHttpUpload"
             :before-upload="beforeUpload" :on-exceed="handleExceed" :on-success="uploadSuccess"
             :on-progress="handleProgress" drag multiple :limit="limit" :accept="fileType.join(',')">
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
             <div class="el-upload__text">
-                Drag & drop or <em>click here</em> to upload your .heic images
+                Drag & drop or <em>click here</em> to upload your {{ fileType.join(',').replaceAll('image/', '') }}
+                images
             </div>
             <template #tip>
-                <!-- <div class="el-upload__tip">
-                    上传文件支持 {{ fileType.join(' / ').replace('image/', '') }} 格式，单个文件大小不超过 {{ fileSize }}MB，且文件数量不超过 {{
-            limit }} 个
-                </div> -->
+                <div class="el-upload__tip">
+                    Unlimited uploads, but it is recommended not to exceed {{
+            limit }} files.
+                </div>
             </template>
         </el-upload>
 
@@ -25,7 +26,7 @@
                 </el-table-column>
                 <el-table-column prop="convertedSize" label="ConvertedSize (MB)" align="center">
                     <template #default="{ row }">{{ row?.convertedSize ? ((row.convertedSize) / 1024 /
-            1024).toFixed(2) : 'converting' }}</template>
+            1024).toFixed(2) : '-' }}</template>
                 </el-table-column>
                 <el-table-column prop="progress" label="Progress">
                     <template #default="{ row }">
@@ -34,7 +35,7 @@
                 </el-table-column>
                 <el-table-column label="Actions">
                     <template #default="{ row }">
-                        <span v-show="!row.converted" class="px-1 cursor-pointer select-none">converting</span>
+                        <span v-show="!row.converted" class="px-1 cursor-pointer select-none">-</span>
                         <span v-show="row.converted" @click="downloadImage(row)"
                             class="px-1 cursor-pointer select-none text-green-500">download</span>
                         <!-- <span class="px-1 cursor-pointer select-none text-red-500">删除</span> -->
@@ -71,13 +72,12 @@
             <el-button plain v-show="isConvertedAll" @click="downloadImages">
                 Download All
             </el-button>
-            <el-button v-show="isConvertedAll" plain @click="showImageList = true">
+            <el-button plain v-show="isImageSelected" @click="refreshList">
+                Refresh List
+            </el-button>
+            <el-button v-show="isImageSelected" plain @click="showImageList = true">
                 Check List
             </el-button>
-            <!-- <el-button plain @click="removeExif">
-                移除
-            </el-button> -->
-
         </section>
 
         <el-image-viewer v-if="imgViewVisible" :url-list="viewImageUrls" @close="imgViewVisible = false" />
@@ -90,11 +90,22 @@ import heic2any from 'heic2any';
 import Description from './Description.vue';
 import JSZip from 'jszip';
 import { ref } from 'vue';
+// import { useSeoMeta } from '@unhead/vue'
+
+// useSeoMeta({
+//     title: 'Heic Converter Free and Easy',
+//     description: 'Convert HEIC/HEIF to PNG with high quality and lossless compression.',
+//     ogDescription: 'HEIC, HEIF, PNG, converter, conversion, online, secure',
+//     ogTitle: 'About',
+//     ogImage: 'https://example.com/image.png',
+//     twitterCard: 'summary_large_image',
+// })
+
 /** todo 
  * 1. 图片预览下载删除功能
  * 2. 优化
  *  */
-const fileType = ["image/heic"]
+const fileType = ["image/heic", 'image/heif']
 // const fileType = ["jpeg", "png", "gif"]
 const fileSize = 10
 const limit = 100
@@ -105,15 +116,15 @@ const imageList = ref([]);
  * @param rawFile 选择的文件
  * */
 const beforeUpload = rawFile => {
-    const imgSize = rawFile.size / 1024 / 1024 < fileSize;
+    // const imgSize = rawFile.size / 1024 / 1024 < fileSize;
     const imgType = fileType.includes(rawFile.type);
     if (!imgType)
-        ElMessage.error(`just surpport ${fileType.join(',').replace('image/', '')} format！`)
-    if (!imgSize)
-        setTimeout(() => {
-            ElMessage.error(`file size should not exceed ${fileSize}MB！`)
-        }, 0);
-    return imgType && imgSize;
+        ElMessage.error(`just surpport ${fileType.join(',').replaceAll('image/', '')} format！`)
+    // if (!imgSize)
+    //     setTimeout(() => {
+    //         ElMessage.error(`file size should not exceed ${fileSize}MB！`)
+    //     }, 0);
+    return imgType;
 };
 
 /**
@@ -169,7 +180,7 @@ const previewImages = () => {
 
 
 // 图片转换逻辑
-const format = ref('image/png');
+const format = ref('image/jpeg');
 const quality = ref(0.8);
 // const gifInterval = ref(0.8);
 
@@ -219,7 +230,11 @@ const convertImages = () => {
     })
 };
 
-
+const refreshList = () => {
+    imageList.value = [];
+    isConvertedAll.value = false;
+    showImageList.value = false;
+}
 const downloadImages = () => {
     const zip = new JSZip();
     imageList.value.forEach((item) => {

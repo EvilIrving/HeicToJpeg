@@ -9,6 +9,9 @@ import IconsResolver from 'unplugin-icons/resolver'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+// // 导入prerender-spa-plugin插件，并创建一个PuppeteerRenderer
+// const PrerenderSPAPlugin = require('prerender-spa-plugin')
+// const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -45,7 +48,6 @@ export default defineConfig({
         ElementPlusResolver(),
       ],
     }),
-
     Icons({
       autoInstall: true,
     }),
