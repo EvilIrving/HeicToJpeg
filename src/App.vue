@@ -12,7 +12,7 @@ import { RouterView } from 'vue-router'
 }
 
 .primary-btn {
-  /* 设置按钮的背景颜色和文本颜色 */
+  /* 设置按钮的背景颜色和文本颜色  */
   background-color: #00c853;
   color: #fff;
 
