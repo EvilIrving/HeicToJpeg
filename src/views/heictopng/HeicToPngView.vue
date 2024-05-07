@@ -116,7 +116,7 @@ const imageList = ref([]);
  * @param rawFile 选择的文件
  * */
 const beforeUpload = rawFile => {
-    // const imgSize = rawFile.size / 1024 / 1024 < fileSize;
+    const imgSize = rawFile.size / 1024 / 1024 < fileSize;
     const imgType = fileType.includes(rawFile.type);
     if (!imgType)
         ElMessage.error(`just surpport ${fileType.join(',').replaceAll('image/', '')} format！`)
