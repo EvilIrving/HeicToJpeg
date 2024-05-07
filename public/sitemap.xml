@@ -24,18 +24,12 @@
       <changefreq>weekly</changefreq>
       <priority>0.5</priority>
 </url>
-<url>
-      <loc>https://www.googletagmanager.com/gtag/js?id=G-H8B2S3ZDV2</loc>
-      <lastmod>2005-01-01</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.5</priority>
-</url>
-<url>
+<!-- <url>
       <loc>https://www.convertools.site/robots.txt</loc>
       <lastmod>2005-01-01</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.5</priority>
-</url>
+</url> -->
 <url>
       <loc>https://convertools.site/assets/index-DlMyPULx.js</loc>
       <lastmod>2005-01-01</lastmod>
