@@ -20,14 +20,9 @@ const router = createRouter({
       component: () => import('../views/flyweight/FlyweightView.vue')
     },
     {
-      path: '/',
+      path: '/heictopng',
       name: 'heictopng',
       component: () => import('../views/heictopng/HeicToPngView.vue')
-    },
-    {
-      path: '/pension',
-      name: 'pension',
-      component: () => import('../views/pension/PensionView.vue')
     },
     {
       path: '/grid',
