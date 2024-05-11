@@ -1,33 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HeicToPngView from '../views/HeicToPngView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: HomeView
-    // },
     {
-      path: '/command',
-      name: 'command',
-      component: () => import('../views/command/CommandView.vue')
-    },
-    {
-      path: '/flyweight',
-      name: 'flyweight',
-      component: () => import('../views/flyweight/FlyweightView.vue')
-    },
-    {
-      path: '/heictopng',
-      name: 'heictopng',
-      component: () => import('../views/heictopng/HeicToPngView.vue')
-    },
-    {
-      path: '/grid',
-      name: 'grid',
-      component: () => import('../views/grid/GridView.vue')
+      path: '/',
+      name: 'home',
+      component: HeicToPngView
     },
   ]
 })
