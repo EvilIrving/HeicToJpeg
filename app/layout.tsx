@@ -2,10 +2,10 @@ import '@/style/global.css'
 
 import { inter } from '@/font/fonts'
 import Footer from '@/components/footer'
-import { Analytics, AnalyticsConfig } from 'pliny/analytics'
 import siteMetadata from '@/data/siteMetadata'
 import { Metadata } from 'next'
-
+import { GoogleAnalytics } from '@/analytics/index'
+// import type GoogleAnalyticsProps from '@/analytics/index'
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {
@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang={siteMetadata.language}>
       <body className={`${inter.className} antialiased`}>
-        <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
+        <GoogleAnalytics trackingId={'G-H8B2S3ZDV2'} />
         <main> {children}</main>
         <Footer />
       </body>
