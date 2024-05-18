@@ -1,0 +1,11 @@
+{
+  "quoteProps": "as-needed",
+  "semi": false,
+  "singleAttributePerLine": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "useTabs": false,
+  "printWidth": 300,
+  "htmlWhitespaceSensitivity": "ignore"
+}
