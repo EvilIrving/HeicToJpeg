@@ -29,7 +29,7 @@ export default function Table({ isConverted, files, clear, downloads, download }
     setCurrentPage((prevPage) => prevPage + 1)
   }
   return (
-    <div className="overflow-x-auto mx-auto max-w-3xl">
+    <div className="overflow-x-auto">
       <div className="sm:flex sm:items-center sm:justify-between">
         <h2 className="text-lg font-medium text-gray-800 dark:text-white">Photos uploaded ({files.length} files)</h2>
 

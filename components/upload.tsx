@@ -31,7 +31,7 @@ export default function Upload({ onHandleFiles }: { onHandleFiles: (files: FileL
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <label
         htmlFor="upload-btn"
         className={clsx('flex w-full cursor-pointer appearance-none items-center justify-center rounded-xl border-2 border-dashed border-gray-200 px-6 py-10 transition-all hover:border-primary-300', {

@@ -1,9 +1,11 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
   title: 'HEIC to PNG/JPEG Converter - Simple, Free, and Offline',
+  name:"Heic Convert",
   author: 'Cain',
   headerTitle: 'HEIC to PNG/JPEG Converter - Simple, Free, and Offline',
   description: 'Convert HEIC to JPG effortlessly with our user-friendly website. Experience high-quality image conversion and enjoy compatibility across multiple platforms.',
+  introduce:"Our converter provides a hassle-free solution, allowing you to transform your HEIC files into widely supported formats. With our offline functionality, you can conveniently convert your images without the need for an internet connection. ",
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'https://convertools.site',

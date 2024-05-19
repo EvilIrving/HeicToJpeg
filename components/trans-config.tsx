@@ -10,7 +10,7 @@ export default function Config({ format, quality, setFormat, setQualityValue }: 
     setQualityValue(quality)
   }
   return (
-    <section className=" py-4 mx-auto max-w-3xl">
+    <section className="py-4">
       <div className="mt-2">
         <label
           htmlFor="format-btn"

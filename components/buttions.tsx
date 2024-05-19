@@ -9,7 +9,7 @@ export default function Buttons({ loading, convert, preview }: { loading: boolea
   }
 
   return (
-    <section className="flex gap-4 py-4 mx-auto max-w-3xl">
+    <section className="flex gap-4 py-4">
       <button
         className="btn"
         onClick={() => {

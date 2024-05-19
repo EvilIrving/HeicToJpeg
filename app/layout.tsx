@@ -1,10 +1,14 @@
 import '@/style/global.css'
 
 import { inter } from '@/font/fonts'
-import Footer from '@/components/footer'
+import Footer from '@/components/Footer'
 import siteMetadata from '@/data/siteMetadata'
 import { Metadata } from 'next'
 import { GoogleAnalytics } from '@/analytics/index'
+import { ThemeProvider } from 'next-themes'
+import { NextUIProvider } from '@nextui-org/react'
+
+import Header from '@/components/Header'
 // import type GoogleAnalyticsProps from '@/analytics/index'
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
@@ -49,10 +53,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang={siteMetadata.language}>
-      <body className={`${inter.className} antialiased`}>
-        <GoogleAnalytics trackingId={'G-H8B2S3ZDV2'} />
-        <main> {children}</main>
-        <Footer />
+      <body className={`${inter.className} antialiased mx-4 sm:mx-40`}>
+        <NextUIProvider>
+          <ThemeProvider>
+            <Header />
+            <GoogleAnalytics trackingId={'G-H8B2S3ZDV2'} />
+            <main className='mx-auto max-w-3xl'> {children}</main>
+            <Footer />
+          </ThemeProvider>
+        </NextUIProvider>
       </body>
     </html>
   )

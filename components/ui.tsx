@@ -4,11 +4,8 @@ import Upload from '@/components/upload'
 import Config from '@/components/trans-config'
 import Buttons from '@/components/buttions'
 import Table from '@/components/table'
-import FAQ from '@/faq/page'
-import Title from '@/components/title'
 import { useState } from 'react'
 import { userFile } from '@/types/definitions'
-import { NextUIProvider } from '@nextui-org/react'
 import heic2any from 'heic2any'
 import JSZip from 'jszip'
 
@@ -90,7 +87,7 @@ export default function UI() {
       })
     })
   }
-  function preview() {}
+  function preview() { }
   function downloadImages() {
     const zip = new JSZip()
     userFiles.forEach((item) => {
@@ -120,9 +117,8 @@ export default function UI() {
     link.click()
   }
   return (
-    <NextUIProvider>
-      <main>
-        {/* <div role="alert" className="flex flex-col alert alert-info w-1/3 absolute left-1/2 transform -translate-x-1/2">
+    <>
+      {/* <div role="alert" className="flex flex-col alert alert-info w-1/3 absolute left-1/2 transform -translate-x-1/2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span>you have files undownloaded, do you want to clear them all?</span>
                     <div className='flex gap-4'>
@@ -130,32 +126,29 @@ export default function UI() {
                         <button className="btn btn-sm btn-primary">Accept</button>
                     </div>
                 </div> */}
-        <Title />
-        <Upload onHandleFiles={(files: FileList | null) => handleFiles(files)} />
-        {userFiles.length > 0 ? (
-          <>
-            <Config
-              format={format}
-              quality={quality}
-              setFormat={(format: string) => setFormatter(format)}
-              setQualityValue={(quality: number) => setQualityValue(quality)}
-            />
-            <Buttons
-              loading={loading}
-              convert={() => convert()}
-              preview={() => preview()}
-            />
-            <Table
-              isConverted={isConverted}
-              files={userFiles}
-              downloads={() => downloadImages()}
-              download={(item: userFile) => downloadImage(item)}
-              clear={() => setUserFiles([])}
-            />
-          </>
-        ) : null}
-        <FAQ />
-      </main>
-    </NextUIProvider>
+      <Upload onHandleFiles={(files: FileList | null) => handleFiles(files)} />
+      {userFiles.length > 0 ? (
+        <>
+          <Config
+            format={format}
+            quality={quality}
+            setFormat={(format: string) => setFormatter(format)}
+            setQualityValue={(quality: number) => setQualityValue(quality)}
+          />
+          <Buttons
+            loading={loading}
+            convert={() => convert()}
+            preview={() => preview()}
+          />
+          <Table
+            isConverted={isConverted}
+            files={userFiles}
+            downloads={() => downloadImages()}
+            download={(item: userFile) => downloadImage(item)}
+            clear={() => setUserFiles([])}
+          />
+        </>
+      ) : null}
+    </>
   )
 }
