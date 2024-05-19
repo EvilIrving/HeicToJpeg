@@ -87,7 +87,7 @@ export default function UI() {
       })
     })
   }
-  function preview() { }
+  function preview() {}
   function downloadImages() {
     const zip = new JSZip()
     userFiles.forEach((item) => {

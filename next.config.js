@@ -6,9 +6,9 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'img.freepik.com',
-        pathname: '/free-vector/**'
-      }
-    ]
+        pathname: '/free-vector/**',
+      },
+    ],
   },
 }
 

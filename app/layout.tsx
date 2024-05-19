@@ -58,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider>
             <Header />
             <GoogleAnalytics trackingId={'G-H8B2S3ZDV2'} />
-            <main className='mx-auto max-w-3xl'> {children}</main>
+            <main className="mx-auto max-w-3xl"> {children}</main>
             <Footer />
           </ThemeProvider>
         </NextUIProvider>
