@@ -1,14 +1,14 @@
 import '@/style/global.css'
 
 import { inter } from '@/font/fonts'
-import Footer from '@/components/Footer'
-import siteMetadata from '@/data/siteMetadata'
-import { Metadata } from 'next'
-import { GoogleAnalytics } from '@/analytics/index'
-import { ThemeProvider } from 'next-themes'
 import { NextUIProvider } from '@nextui-org/react'
-
+import { ThemeProvider } from 'next-themes'
+import { Metadata } from 'next'
+import siteMetadata from '@/data/siteMetadata'
+import { GoogleAnalytics } from '@/analytics/index'
 import Header from '@/components/Header'
+import Footer from '@/components/FooterPage'
+
 // import type GoogleAnalyticsProps from '@/analytics/index'
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),

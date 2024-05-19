@@ -1,9 +1,9 @@
 'use client'
 
-import Upload from '@/components/upload'
-import Config from '@/components/trans-config'
-import Buttons from '@/components/buttions'
-import Table from '@/components/table'
+import Upload from '@/components/Upload'
+import Config from '@/components/Trans-config'
+import Buttons from '@/components/Buttions'
+import Table from '@/components/Table'
 import { useState } from 'react'
 import { userFile } from '@/types/definitions'
 import heic2any from 'heic2any'
