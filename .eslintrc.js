@@ -1,36 +1,49 @@
 module.exports = {
-  root: true,
-  parser: '@typescript-eslint/parser',
-  env: {
-    browser: true,
-    amd: true,
-    node: true,
-    es6: true,
-  },
-  plugins: ['@typescript-eslint'],
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/eslint-recommended', 'plugin:@typescript-eslint/recommended', 'plugin:jsx-a11y/recommended', 'plugin:prettier/recommended', 'next', 'next/core-web-vitals'],
-  parserOptions: {
-    project: true,
-    tsconfigRootDir: __dirname,
-  },
+  parser: "@typescript-eslint/parser",
+  extends: [
+    "next/core-web-vitals",
+    "prettier",
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:tailwindcss/recommended",
+  ],
+  plugins: ["simple-import-sort", "prettier", "@typescript-eslint"],
   rules: {
-    'prettier/prettier': 'error',
-    'react/react-in-jsx-scope': 'off',
-    'jsx-a11y/anchor-is-valid': [
-      'error',
+    "no-require-imports": "off",
+    "no-unused-vars": "off",
+    "prettier/prettier": [
+      "error",
       {
-        components: ['Link'],
-        specialLink: ['hrefLeft', 'hrefRight'],
-        aspects: ['invalidHref', 'preferButton'],
+        endOfLine: "auto",
       },
     ],
-    'react/prop-types': 0,
-    '@typescript-eslint/no-unused-vars': 0,
-    'react/no-unescaped-entities': 0,
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-var-requires': 'off',
-    '@typescript-eslint/ban-ts-comment': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    'jsx-a11y/label-has-associated-control': 'off',
+    "sort-imports": "off",
+    "tailwindcss/no-custom-classname": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-require-imports": "off",
+    "simple-import-sort/imports": [
+      2,
+      {
+        groups: [
+          ["^.+\\.s?css$"],
+          [
+            `^(${require("module").builtinModules.join("|")})(/|$)`,
+            "^react",
+            "^@?\\w",
+          ],
+          ["^components(/.*|$)"],
+          ["^lib(/.*|$)", "^hooks(/.*|$)"],
+          ["^\\."],
+        ],
+      },
+    ],
   },
-}
+  settings: {
+    tailwindcss: {
+      callees: ["cn"],
+      config: "tailwind.config.ts",
+    },
+  },
+};

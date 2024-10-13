@@ -1,35 +1,48 @@
-# HEIC/HEIF to PNG Converter
 
-## Introduction
+# Nextjs Template
 
-This project provides a user-friendly solution to convert HEIC/HEIF images to PNG format while maintaining high quality and preserving the integrity of the original files. Designed to be simple and secure, our tool ensures that your images are converted with precision without the need for complicated processes or concerns about privacy.
+## Description
 
 ## Features
 
-### Simple to Use
+- 使用 Next.js 14
+- 使用 Next Intl 实现国际化
+- 使用 ESLint 进行代码检查
+- 使用 Prettier 进行代码格式化
 
-- Convert HEIC/HEIF to PNG with high quality and lossless compression.
+## 目录结构
 
-### Convert Multiple Files at Once
+```plaintext
+nextjs-template/
+├── public/
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── lib/
+│   ├── types/
+│   └── utils/
+├── .env
+├── .eslintrc.js
+├── .prettierrc.js
+├── next.config.js
+```
 
-- Ability to convert multiple HEIC/HEIF files simultaneously and download them as a single zip file.
+## 使用
 
-### Keep Your Files Secure
+### 安装依赖
 
-- As an offline solution, your files are processed on your device without being uploaded to any server, ensuring your data remains secure.
+```bash
+npm install
+```
 
-### Keep Original Size & Quality
+### 本地开发
 
-- Files retain their original dimensions and quality; no resizing or cropping occurs during conversion.
+```bash
+npm run dev
+```
 
-### No Registration Required
+### 打包
 
-- Use our conversion tool immediately, with no need for creating an account or disclosing personal information.
-
-### No Software Download Needed
-
-- Access the HEIC/HEIF to PNG conversion service directly from our website without the need to install any additional software.
-
-### Convenient File Saving Options
-
-- Save your converted PNG files directly to your computer, or upload them to Google Drive or Dropbox for easy access and storage.
+```bash
+npm run build
+```

@@ -1,5 +1,4 @@
-auto-imports.d.ts
-components.d.ts
-pnpm-lock.yaml
-yarn.lock
-node_modules/
+node_modules
+/public
+/dist
+/build
