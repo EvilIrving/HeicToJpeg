@@ -1,11 +1,11 @@
 import "@/app/globals.css";
 
+import { NextUIProvider } from "@nextui-org/system";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-
-import { Providers } from "./providers";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 import { GoogleAnalytics } from "@/analytics";
 import Header from "@/components/header";
@@ -67,19 +67,19 @@ export default async function RootLayout({
         className={`${inter.className} mx-4 antialiased dark:bg-background sm:mx-40`}
       >
         <GoogleAnalytics trackingId={"G-H8B2S3ZDV2"} />
-        <Providers
-          themeProps={{
-            attribute: "class",
-            defaultTheme: "system",
-          }}
-          messages={messages}
-          locale={locale}
-        >
-          <NextIntlClientProvider messages={messages}>
-            <Header />
-            {children}
-          </NextIntlClientProvider>
-        </Providers>
+        <NextUIProvider>
+          <NextThemesProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NextIntlClientProvider messages={messages}>
+              <Header />
+              {children}
+            </NextIntlClientProvider>
+          </NextThemesProvider>
+        </NextUIProvider>
       </body>
     </html>
   );

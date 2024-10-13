@@ -1,21 +1,21 @@
-import Script from 'next/script'
-import React from 'react'
+import React from "react";
+import Script from "next/script";
 
 export interface Props {
-  trackingId: string
+  trackingId: string;
 }
 
 export default function GoogleAnalytics({ trackingId }: Props) {
   return (
     <>
       <Script
-        data-testid={'gtag'}
+        data-testid={"gtag"}
         src={`https://www.googletagmanager.com/gtag/js?id=${trackingId}`}
         strategy="afterInteractive"
       />
       <Script
         id="google-analytics"
-        data-testid={'gtagSetup'}
+        data-testid={"gtagSetup"}
         strategy="afterInteractive"
       >{`
           window.dataLayer = window.dataLayer || [];
@@ -24,5 +24,5 @@ export default function GoogleAnalytics({ trackingId }: Props) {
           gtag('config', '${trackingId}');
         `}</Script>
     </>
-  )
+  );
 }

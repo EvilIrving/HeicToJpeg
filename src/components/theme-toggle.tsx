@@ -20,7 +20,7 @@ export function ModeToggle() {
       role="switch"
       aria-checked={enabled}
       onClick={toggleTheme}
-      className="transition-border-color duration-250 relative block h-6 w-12 shrink-0 rounded-full border border-gray-50 bg-gray-100 px-2 py-1 outline-none ease-in-out hover:border-primary dark:border-gray-600 dark:bg-gray-800"
+      className="transition-border-color relative block h-6 w-12 shrink-0 rounded-full border border-gray-50 bg-gray-100 px-2 py-1 outline-none duration-250 ease-in-out hover:border-primary dark:border-gray-600 dark:bg-gray-800"
     >
       <span className="box-shadow-sm absolute left-2 top-1 size-6 rounded-full transition-translate-x duration-500 ease-in-out dark:translate-x-4">
         {enabled ? <MoonIcon /> : <SunIcon />}
