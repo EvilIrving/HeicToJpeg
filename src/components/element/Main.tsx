@@ -110,7 +110,12 @@ export default function UI() {
   function downloadImages() {
     const zip = new JSZip();
     userFiles.forEach((item) => {
-      zip.file(item.name, item.convertedFile as File, { binary: true });
+      // 保存文件时添加格式信息
+      zip.file(
+        `${item.name}.${format.replace("image/", "")}`,
+        item.convertedFile as File,
+        { binary: true }
+      );
     });
 
     // Generate the zip file
