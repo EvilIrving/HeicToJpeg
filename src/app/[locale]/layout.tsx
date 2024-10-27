@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import { NextUIProvider } from "@nextui-org/system";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
@@ -67,6 +68,11 @@ export default async function RootLayout({
         className={`${inter.className} mx-4 antialiased dark:bg-background sm:mx-40`}
       >
         <GoogleAnalytics trackingId={"G-H8B2S3ZDV2"} />
+        <Script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="92bec6d5-24ed-46d5-beec-ed7eb85b88a0"
+        ></Script>
         <NextUIProvider>
           <NextThemesProvider
             attribute="class"
