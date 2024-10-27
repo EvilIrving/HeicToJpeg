@@ -5,7 +5,7 @@ import { siteMetadata } from "@/data.config";
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = siteMetadata.siteUrl;
 
-  const routes = [""].map((route) => ({
+  const routes = ["", "zh", "en"].map((route) => ({
     url: `${siteUrl}/${route}`,
     lastModified: new Date().toISOString().split("T")[0],
   }));

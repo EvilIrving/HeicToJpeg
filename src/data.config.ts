@@ -19,8 +19,9 @@ export const siteMetadata = {
   theme: "system", // system, dark or light
   siteUrl: "https://convertools.site",
   siteRepo: "https://github.com/EvilIrving/heic_convert",
-  siteLogo: "/static/images/logo.png",
-  socialBanner: "/static/images/twitter-card.png",
+  siteLogo: "/logo/logo.png",
+  // socialBanner: "/static/images/twitter-card.png",
+  socialBanner: "/logo/logo.png",
   email: "dong.yy1916@gmail.com",
   github: "https://github.com/EvilIrving",
   x: "https://x.com/Losewings",
