@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, DragEvent, useState } from "react";
 import clsx from "clsx";
 
 export default function Upload({
@@ -9,26 +9,20 @@ export default function Upload({
   onHandleFiles: (files: FileList | null) => void;
 }) {
   const [isDragging, setIsDragging] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleDrop = (event: any) => {
+
+  const handleDrop = (event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault();
     setIsDragging(false);
-    const files = event.dataTransfer.files;
-    getUserFiles(files);
+    const { files } = event.dataTransfer;
+    onHandleFiles(files?.length ? files : null);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleFileSelect = (event: any) => {
-    const files = event.target.files;
-    getUserFiles(files);
+  const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const { files } = event.target;
+    onHandleFiles(files?.length ? files : null);
   };
 
-  const getUserFiles = (files: FileList | null) => {
-    onHandleFiles(files);
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleDragOver = (event: any) => {
+  const handleDragOver = (event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault();
     setIsDragging(true);
   };

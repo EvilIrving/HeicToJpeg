@@ -1,5 +1,5 @@
 export type userFile = {
-  // uuid: string
+  id: string;
   name: string;
   size: string;
   url?: string;
@@ -8,6 +8,7 @@ export type userFile = {
   convertedFile?: File;
   convertedSize?: string;
   progress: number;
+  error?: string;
 };
 
 import type { PropsWithChildren } from "react";

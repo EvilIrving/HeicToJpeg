@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@nextui-org/button";
-import heic2any from "heic2any";
-import JSZip from "jszip";
 
 import Config from "./FileTypeConfig";
 import Table from "./Table";
@@ -11,138 +9,183 @@ import Upload from "./Upload";
 
 import { userFile } from "@/definitions";
 
+function createFileId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random()}`;
+}
+
+function getFileSize(size: number) {
+  return `${(size / 1024 / 1024).toFixed(2)}MB`;
+}
+
 export default function UI() {
   const [userFiles, setUserFiles] = useState<userFile[]>([]);
-  const newFiles: userFile[] = [];
-  function handleFiles(files: FileList | null) {
-    if (files === null) return;
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      newFiles.push({
-        name: file.name.split(".")?.[0] || "",
-        size: getFileSize(file.size),
-        file: file,
-        isConverted: false,
-        progress: 0,
-      });
-    }
-    setUserFiles(newFiles);
-  }
+  const userFilesRef = useRef<userFile[]>([]);
 
-  function getFileSize(size: number) {
-    return (size / 1024 / 1024).toFixed(2) + "MB";
-  }
+  useEffect(() => {
+    userFilesRef.current = userFiles;
+  }, [userFiles]);
 
   const [format, setFormat] = useState("jpeg");
-  function setFormatter(format: string) {
-    setFormat(format);
-  }
-
   const [quality, setQuality] = useState(0.8);
-  function setQualityValue(quality: number) {
-    setQuality(quality);
-  }
-
-  const [isConverted, setIsConverted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  function convert() {
-    setLoading(true);
-    setIsConverted(false);
-    if (isConverted) {
-      userFiles.forEach((item) => {
-        item.progress = 0;
-        item.isConverted = false;
-      });
-      setUserFiles([...userFiles]);
-    }
+  function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
 
-    const option = { toType: `image/${format}`, quality: quality };
-    let currentIndex = 0;
+    const incomingFiles: userFile[] = Array.from(files).map((file) => ({
+      id: createFileId(),
+      name: file.name.split(".")?.[0] || "",
+      size: getFileSize(file.size),
+      file,
+      isConverted: false,
+      progress: 0,
+    }));
 
-    const convertNextFile = () => {
-      if (currentIndex >= userFiles.length) {
-        setLoading(false);
-        setIsConverted(true);
-        return;
-      }
-
-      const item = userFiles[currentIndex];
-      const fileName = item.name.split(".")[0];
-      const extension = format.replace("image/", "");
-
-      item.progress = 0;
-      setUserFiles([...userFiles]);
-
-      const convertedImage = heic2any({
-        blob: item.file,
-        ...option,
-      });
-
-      convertedImage.then((result) => {
-        const file = new File([result as Blob], `${fileName}.${extension}`);
-        item.isConverted = true;
-        item.progress = 100;
-        item.convertedSize = getFileSize(file.size);
-        item.convertedFile = file;
-
-        setUserFiles([...userFiles]);
-        currentIndex++;
-        convertNextFile();
-      });
-
-      // 模拟转换进度
-      let progress = 0;
-      const progressInterval = setInterval(() => {
-        progress += 10;
-        if (progress > 90) {
-          clearInterval(progressInterval);
-        } else {
-          item.progress = progress;
-          setUserFiles([...userFiles]);
-        }
-      }, 100);
-    };
-
-    convertNextFile();
+    setUserFiles((prevFiles) => [...prevFiles, ...incomingFiles]);
   }
-  function preview() {}
-  function downloadImages() {
-    const zip = new JSZip();
-    userFiles.forEach((item) => {
-      // 保存文件时添加格式信息
-      zip.file(
-        `${item.name}.${format.replace("image/", "")}`,
-        item.convertedFile as File,
-        { binary: true }
-      );
-    });
 
-    // Generate the zip file
-    zip
-      .generateAsync({ type: "blob" })
-      .then((zipBlob) => {
-        // Create a download link and trigger the download
-        saveAsfile(zipBlob, "images.zip");
-      })
-      .catch((error) => {
-        console.error("Failed to generate the zip file:", error);
+  function setFormatter(nextFormat: string) {
+    setFormat(nextFormat);
+  }
+
+  function setQualityValue(nextQuality: number) {
+    setQuality(nextQuality);
+  }
+
+  function resolveExtension() {
+    return format.replace("image/", "");
+  }
+
+  async function convert() {
+    if (!userFiles.length) return;
+
+    const fileIds = userFiles.map((file) => file.id);
+    setLoading(true);
+
+    setUserFiles((prevFiles) =>
+      prevFiles.map((file) =>
+        fileIds.includes(file.id)
+          ? {
+              ...file,
+              progress: 0,
+              isConverted: false,
+              convertedSize: undefined,
+              convertedFile: undefined,
+              error: undefined,
+            }
+          : file
+      )
+    );
+
+    const option = { toType: `image/${resolveExtension()}`, quality };
+    const extension = resolveExtension();
+
+    try {
+      const { default: heic2any } = await import("heic2any");
+      for (const id of fileIds) {
+        const targetFile = userFilesRef.current.find((file) => file.id === id);
+        if (!targetFile) continue;
+
+        setUserFiles((prevFiles) =>
+          prevFiles.map((file) =>
+            file.id === id
+              ? {
+                  ...file,
+                  progress: 25,
+                  error: undefined,
+                }
+              : file
+          )
+        );
+
+        try {
+          const result = await heic2any({
+            blob: targetFile.file,
+            ...option,
+          });
+
+          const blobResult = Array.isArray(result) ? result[0] : (result as Blob);
+          const convertedFile = new File(
+            [blobResult],
+            `${targetFile.name}.${extension}`
+          );
+
+          setUserFiles((prevFiles) =>
+            prevFiles.map((file) =>
+              file.id === id
+                ? {
+                    ...file,
+                    isConverted: true,
+                    progress: 100,
+                    convertedSize: getFileSize(convertedFile.size),
+                    convertedFile,
+                    error: undefined,
+                  }
+                : file
+            )
+          );
+        } catch (error) {
+          console.error("Failed to convert file:", error);
+          setUserFiles((prevFiles) =>
+            prevFiles.map((file) =>
+              file.id === id
+                ? {
+                    ...file,
+                    progress: 0,
+                    error: "Conversion failed",
+                  }
+                : file
+            )
+          );
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function downloadImages() {
+    const extension = resolveExtension();
+    let hasConvertibleFiles = false;
+
+    (async () => {
+      const JSZip = (await import("jszip")).default;
+      const { saveAs } = await import("file-saver");
+      const zip = new JSZip();
+
+      userFiles.forEach((item) => {
+        if (!item.convertedFile) return;
+        hasConvertibleFiles = true;
+        zip.file(`${item.name}.${extension}`, item.convertedFile, { binary: true });
       });
+
+      if (!hasConvertibleFiles) return;
+
+      zip
+        .generateAsync({ type: "blob" })
+        .then((zipBlob) => {
+          saveAs(zipBlob, "images.zip");
+        })
+        .catch((error) => {
+          console.error("Failed to generate the zip file:", error);
+        });
+    })();
   }
 
   function downloadImage(item: userFile) {
-    saveAsfile(
-      item.convertedFile as File,
-      `${item.name}.${format.replace("image/", "")}`
-    );
+    if (!item.convertedFile) return;
+
+    const extension = resolveExtension();
+    (async () => {
+      const { saveAs } = await import("file-saver");
+      saveAs(item.convertedFile!, `${item.name}.${extension}`);
+    })();
   }
 
-  function saveAsfile(blob: Blob, name: string) {
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = name;
-    link.click();
-  }
   return (
     <>
       {/* <div role="alert" className="flex flex-col alert alert-info w-1/3 absolute left-1/2 transform -translate-x-1/2">
@@ -173,7 +216,6 @@ export default function UI() {
             Convert
           </Button>
           <Table
-            isConverted={isConverted}
             isConverting={loading}
             files={userFiles}
             downloads={() => downloadImages()}

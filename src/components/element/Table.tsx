@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { Image } from "@nextui-org/image";
 import {
@@ -22,54 +22,78 @@ import {
 import { userFile } from "@/definitions";
 
 export default function TableElement({
-  isConverted,
   isConverting,
   files,
   clear,
   downloads,
   download,
 }: {
-  isConverted: boolean;
   isConverting: boolean;
   files: userFile[];
   clear: () => void;
   downloads: () => void;
   download: (file: userFile) => void;
 }) {
-  function clearImages() {
-    clear();
-  }
-  function downloadImages() {
-    downloads();
-  }
-  function downloadImage(file: userFile) {
-    download(file);
-  }
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(files.length / itemsPerPage));
+    setCurrentPage((prevPage) => Math.min(prevPage, maxPage));
+  }, [files.length]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalPages = Math.ceil(files.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(files.length / itemsPerPage));
+
+  function clearImages() {
+    clear();
+    setCurrentPage(1);
+  }
+
+  function downloadImages() {
+    downloads();
+  }
+
+  function downloadImage(file: userFile) {
+    download(file);
+  }
 
   function prev() {
-    setCurrentPage((prevPage) => prevPage - 1);
+    setCurrentPage((prevPage) => Math.max(1, prevPage - 1));
   }
 
   function next() {
-    setCurrentPage((prevPage) => prevPage + 1);
+    setCurrentPage((prevPage) => Math.min(totalPages, prevPage + 1));
   }
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [previewFile, setPreviewFile] = useState<userFile | null>(null);
 
   function previewImage(file: userFile) {
-    file.url = URL.createObjectURL(file.convertedFile || file.file);
-    setPreviewFile(file);
+    if (previewFile?.url) {
+      URL.revokeObjectURL(previewFile.url);
+    }
+
+    const blob = file.convertedFile ?? file.file;
+    const url = URL.createObjectURL(blob);
+    setPreviewFile({ ...file, url });
     onOpen();
   }
+
+  const closePreview = () => {
+    if (previewFile?.url) {
+      URL.revokeObjectURL(previewFile.url);
+    }
+    setPreviewFile(null);
+    onClose();
+  };
+
+  const hasConvertedFiles = files.some((file) => file.convertedFile);
+  const disablePrev = currentPage === 1;
+  const disableNext = currentPage >= totalPages;
 
   return (
     <div className="overflow-x-auto">
@@ -80,7 +104,7 @@ export default function TableElement({
 
         <div className="mb-2 flex items-center gap-x-3">
           <Button
-            isDisabled={isConverting}
+            isDisabled={isConverting || files.length === 0}
             radius="full"
             color="primary"
             onClick={clearImages}
@@ -91,7 +115,7 @@ export default function TableElement({
           <Button
             radius="full"
             color="primary"
-            isDisabled={isConverting}
+            isDisabled={isConverting || !hasConvertedFiles}
             onClick={downloadImages}
           >
             Download All
@@ -109,12 +133,16 @@ export default function TableElement({
           </TableHeader>
           <TableBody>
             {currentItems.map((file) => (
-              <TableRow key={file.name}>
+              <TableRow key={file.id}>
                 <TableCell>{file.name}</TableCell>
                 <TableCell>{file.size}</TableCell>
                 <TableCell>
                   {file.isConverted ? (
                     file.convertedSize
+                  ) : file.error ? (
+                    <span className="text-red-500 dark:text-red-400">
+                      {file.error}
+                    </span>
                   ) : file.progress ? (
                     <div className="h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
                       <div
@@ -122,6 +150,8 @@ export default function TableElement({
                         style={{ width: `${file.progress}%` }}
                       ></div>
                     </div>
+                  ) : isConverting ? (
+                    "Converting..."
                   ) : (
                     "Waiting"
                   )}
@@ -132,6 +162,7 @@ export default function TableElement({
                       <Button
                         size="sm"
                         variant="light"
+                        isDisabled={!file.convertedFile}
                         onClick={() => downloadImage(file)}
                       >
                         Download
@@ -145,6 +176,10 @@ export default function TableElement({
                         Preview
                       </Button>
                     </>
+                  ) : file.error ? (
+                    <span className="text-red-500 dark:text-red-400">
+                      {file.error}
+                    </span>
                   ) : (
                     "Waiting..."
                   )}
@@ -155,9 +190,9 @@ export default function TableElement({
         </Table>
       </div>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <Modal isOpen={isOpen} onClose={closePreview} size="xl">
         <ModalContent>
-          {(onClose) => (
+          {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 {previewFile?.name}
@@ -170,11 +205,12 @@ export default function TableElement({
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button color="danger" variant="light" onPress={closePreview}>
                   Close
                 </Button>
                 <Button
                   color="primary"
+                  isDisabled={!previewFile?.convertedFile}
                   onPress={() => previewFile && download(previewFile)}
                 >
                   Download
@@ -190,7 +226,7 @@ export default function TableElement({
           className="w-40"
           radius="full"
           color="primary"
-          isDisabled={currentPage === 1}
+          isDisabled={disablePrev}
           onClick={prev}
         >
           Previous
@@ -200,7 +236,7 @@ export default function TableElement({
           className="w-40"
           radius="full"
           color="primary"
-          isDisabled={currentPage === totalPages}
+          isDisabled={disableNext}
           onClick={next}
         >
           Next
