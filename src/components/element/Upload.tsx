@@ -1,25 +1,55 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useState } from "react";
+import { ChangeEvent, DragEvent, memo, useState } from "react";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 
-export default function Upload({
-  onHandleFiles,
-}: {
+interface UploadProps {
   onHandleFiles: (files: FileList | null) => void;
-}) {
+  isDisabled?: boolean;
+}
+
+function Upload({
+  onHandleFiles,
+  isDisabled = false,
+}: UploadProps) {
+  const t = useTranslations("Upload");
   const [isDragging, setIsDragging] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const validateFiles = (files: FileList | null): boolean => {
+    if (!files) return false;
+
+    for (const file of Array.from(files)) {
+      if (!file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+        setError(t("invalidFormat", { fileName: file.name }));
+        return false;
+      }
+      if (file.size > 500 * 1024 * 1024) {
+        setError(t("fileTooLarge", { fileName: file.name }));
+        return false;
+      }
+    }
+    return true;
+  };
 
   const handleDrop = (event: DragEvent<HTMLLabelElement>) => {
     event.preventDefault();
     setIsDragging(false);
+    setError(null);
     const { files } = event.dataTransfer;
-    onHandleFiles(files?.length ? files : null);
+
+    if (validateFiles(files)) {
+      onHandleFiles(files?.length ? files : null);
+    }
   };
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target;
-    onHandleFiles(files?.length ? files : null);
+    setError(null);
+    if (validateFiles(files)) {
+      onHandleFiles(files?.length ? files : null);
+    }
   };
 
   const handleDragOver = (event: DragEvent<HTMLLabelElement>) => {
@@ -36,9 +66,11 @@ export default function Upload({
       <label
         htmlFor="upload-btn"
         className={clsx(
-          "flex w-full cursor-pointer appearance-none items-center justify-center rounded-xl border-2 border-dashed border-gray-200 px-6 py-10 transition-all hover:border-primary",
+          "flex w-full cursor-pointer appearance-none items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 transition-all duration-300 hover:border-primary hover:bg-accent/50",
           {
-            "border-primary-300": isDragging,
+            "border-primary bg-primary/5 ring-2 ring-primary/20": isDragging,
+            "border-border bg-card": !isDragging,
+            "opacity-50 cursor-not-allowed": isDisabled,
           }
         )}
         onDrop={handleDrop}
@@ -46,14 +78,15 @@ export default function Upload({
         onDragLeave={handleDragLeave}
       >
         <div className="space-y-1 text-center">
-          <div className="mx-auto inline-flex size-10 items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200">
+          <div className="mx-auto inline-flex size-10 items-center justify-center rounded-full bg-muted transition-colors hover:bg-accent">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              className="size-6 text-gray-500"
+              className="size-6 text-muted-foreground"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -62,16 +95,21 @@ export default function Upload({
               />
             </svg>
           </div>
-          <div className="text-gray-600">
-            <span className="font-medium text-primary hover:text-primary-300">
-              Click to upload
+          <div className="text-foreground">
+            <span className="font-medium text-primary hover:text-primary/80 transition-colors">
+              {t("clickToUpload")}
             </span>{" "}
-            or drag and drop
+            {t("dragAndDrop")}
           </div>
-          <p className="text-sm text-gray-500">.heic / .heif</p>
-          <p className="text-sm text-gray-500">
-            Unlimited uploads, but it is recommended not to exceed 100 files.
+          <p className="text-sm text-muted-foreground">{t("fileTypes")}</p>
+          <p className="text-sm text-muted-foreground">
+            {t("fileLimit")}
           </p>
+          {error && (
+            <p className="mt-2 text-sm text-destructive font-medium" role="alert">
+              ⚠️ {error}
+            </p>
+          )}
         </div>
         <input
           id="upload-btn"
@@ -80,8 +118,16 @@ export default function Upload({
           className="sr-only"
           multiple
           onChange={handleFileSelect}
+          disabled={isDisabled}
+          aria-label={t("ariaLabel")}
+          aria-describedby="file-upload-description"
         />
       </label>
+      <p id="file-upload-description" className="sr-only">
+        {t("ariaDescription")}
+      </p>
     </div>
   );
 }
+
+export default memo(Upload);

@@ -1,5 +1,75 @@
 {
-    "HomePage": {
-      "title": "Hello world!"
+  "Header": {
+    "title": "HEIC/HEIF Converter"
+  },
+  "Upload": {
+    "clickToUpload": "Click to upload",
+    "dragAndDrop": "or drag and drop",
+    "fileTypes": ".heic / .heif",
+    "fileLimit": "Unlimited uploads, max 500MB per file, recommended max 100 files at once",
+    "invalidFormat": "Invalid file format: {fileName}. Only HEIC/HEIF are supported.",
+    "fileTooLarge": "File too large: {fileName}. Max size is 500MB.",
+    "ariaLabel": "Upload HEIC/HEIF files",
+    "ariaDescription": "You can upload multiple HEIC or HEIF image files. Files are processed offline in your browser."
+  },
+  "Main": {
+    "converting": "Converting...",
+    "convertAll": "Convert All",
+    "downloadAll": "Download All",
+    "clearAll": "Clear All",
+    "noFiles": "No files selected. Upload your HEIC/HEIF images to get started.",
+    "conversionFailed": "Conversion failed"
+  },
+  "Config": {
+    "convertTo": "Convert to",
+    "quality": "Quality"
+  },
+  "Table": {
+    "photosUploaded": "Photos uploaded",
+    "filesCount": "{count} files",
+    "clearAll": "Clear All",
+    "downloadAll": "Download All",
+    "convertingFiles": "Converting files...",
+    "progress": "{current} / {total} ({percent}%)",
+    "name": "Name",
+    "size": "Size",
+    "convertedSize": "Converted Size",
+    "action": "Action",
+    "converting": "Converting...",
+    "waiting": "Waiting",
+    "download": "Download",
+    "preview": "Preview",
+    "close": "Close",
+    "previous": "Previous",
+    "next": "Next",
+    "previewImage": "Preview image"
+  },
+  "FAQ": {
+    "title": "What I have",
+    "worksOffline": {
+      "title": "Works Offline",
+      "description": "Convert HEIC/HEIF images to PNG format without an internet connection."
+    },
+    "batchConversion": {
+      "title": "Batch Conversion",
+      "description": "Convert multiple HEIC/HEIF files at once and download them as a zip file."
+    },
+    "preserveQuality": {
+      "title": "Preserve Original Quality",
+      "description": "Maintain the original size and quality of your files during the conversion process."
+    },
+    "noRegistration": {
+      "title": "No Registration Required",
+      "description": "Start converting your files instantly without the need for registration or personal information."
+    },
+    "previewBeforeDownload": {
+      "title": "Preview before Download",
+      "description": "Preview your files before downloading to ensure they meet your expectations."
     }
+  },
+  "Footer": {
+    "contact": "If you have any questions, please contact me:",
+    "twitter": "Twitter",
+    "telegram": "Telegram"
   }
+}

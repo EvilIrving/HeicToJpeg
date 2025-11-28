@@ -1,14 +1,18 @@
 import { Suspense } from "react";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 
 import FAQ from "@/components/faq/page";
 import Footer from "@/components/footer";
-import Main from "@/components/element/Main";
+
+const Main = dynamic(() => import("@/components/element/Main"), {
+  ssr: false,
+});
 
 export default function Home() {
   const t = useTranslations("HomePage");
   return (
-    <main className="mx-auto mt-4 max-w-4xl">
+    <>
       <Suspense
         fallback={
           <div className="space-y-4">
@@ -21,6 +25,6 @@ export default function Home() {
       </Suspense>
       <FAQ />
       <Footer />
-    </main>
+    </>
   );
 }

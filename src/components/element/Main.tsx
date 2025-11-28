@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@nextui-org/button";
+import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 
-import Config from "./FileTypeConfig";
-import Table from "./Table";
 import Upload from "./Upload";
 
 import { userFile } from "@/definitions";
+
+const Config = dynamic(() => import("./FileTypeConfig"), { ssr: false });
+const Table = dynamic(() => import("./Table"), { ssr: false });
 
 function createFileId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -22,6 +25,7 @@ function getFileSize(size: number) {
 }
 
 export default function UI() {
+  const t = useTranslations("Main");
   const [userFiles, setUserFiles] = useState<userFile[]>([]);
   const userFilesRef = useRef<userFile[]>([]);
 
@@ -33,7 +37,7 @@ export default function UI() {
   const [quality, setQuality] = useState(0.8);
   const [loading, setLoading] = useState(false);
 
-  function handleFiles(files: FileList | null) {
+  const handleFiles = useCallback((files: FileList | null) => {
     if (!files || files.length === 0) return;
 
     const incomingFiles: userFile[] = Array.from(files).map((file) => ({
@@ -46,21 +50,21 @@ export default function UI() {
     }));
 
     setUserFiles((prevFiles) => [...prevFiles, ...incomingFiles]);
-  }
+  }, []);
 
-  function setFormatter(nextFormat: string) {
+  const setFormatter = useCallback((nextFormat: string) => {
     setFormat(nextFormat);
-  }
+  }, []);
 
-  function setQualityValue(nextQuality: number) {
+  const setQualityValue = useCallback((nextQuality: number) => {
     setQuality(nextQuality);
-  }
+  }, []);
 
   function resolveExtension() {
     return format.replace("image/", "");
   }
 
-  async function convert() {
+  const convert = useCallback(async () => {
     if (!userFiles.length) return;
 
     const fileIds = userFiles.map((file) => file.id);
@@ -86,21 +90,11 @@ export default function UI() {
 
     try {
       const { default: heic2any } = await import("heic2any");
+      let convertedCount = 0;
+      
       for (const id of fileIds) {
         const targetFile = userFilesRef.current.find((file) => file.id === id);
         if (!targetFile) continue;
-
-        setUserFiles((prevFiles) =>
-          prevFiles.map((file) =>
-            file.id === id
-              ? {
-                  ...file,
-                  progress: 25,
-                  error: undefined,
-                }
-              : file
-          )
-        );
 
         try {
           const result = await heic2any({
@@ -114,6 +108,7 @@ export default function UI() {
             `${targetFile.name}.${extension}`
           );
 
+          convertedCount++;
           setUserFiles((prevFiles) =>
             prevFiles.map((file) =>
               file.id === id
@@ -136,7 +131,7 @@ export default function UI() {
                 ? {
                     ...file,
                     progress: 0,
-                    error: "Conversion failed",
+                    error: t("conversionFailed"),
                   }
                 : file
             )
@@ -146,15 +141,15 @@ export default function UI() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [userFiles, format, quality]);
 
-  function downloadImages() {
+  const downloadImages = useCallback(() => {
     const extension = resolveExtension();
     let hasConvertibleFiles = false;
 
     (async () => {
       const JSZip = (await import("jszip")).default;
-      const { saveAs } = await import("file-saver");
+      const saveAs = (await import("file-saver")).default;
       const zip = new JSZip();
 
       userFiles.forEach((item) => {
@@ -174,56 +169,93 @@ export default function UI() {
           console.error("Failed to generate the zip file:", error);
         });
     })();
-  }
+  }, [userFiles, format]);
 
-  function downloadImage(item: userFile) {
+  const downloadImage = useCallback((item: userFile) => {
     if (!item.convertedFile) return;
 
     const extension = resolveExtension();
     (async () => {
-      const { saveAs } = await import("file-saver");
+      const saveAs = (await import("file-saver")).default;
       saveAs(item.convertedFile!, `${item.name}.${extension}`);
     })();
-  }
+  }, [format]);
+
+  const clearAllFiles = useCallback(() => {
+    setUserFiles([]);
+  }, []);
+
+  const hasConvertedFiles = useMemo(
+    () => userFiles.some((f) => f.isConverted),
+    [userFiles]
+  );
 
   return (
     <>
-      {/* <div role="alert" className="flex flex-col alert alert-info w-1/3 absolute left-1/2 transform -translate-x-1/2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-info shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>you have files undownloaded, do you want to clear them all?</span>
-                    <div className='flex gap-4'>
-                        <button className="btn btn-sm">Deny</button>
-                        <button className="btn btn-sm btn-primary">Accept</button>
-                    </div>
-                </div> */}
-
-      <Upload onHandleFiles={(files: FileList | null) => handleFiles(files)} />
-      {userFiles.length > 0 ? (
-        <>
-          <Config
-            format={format}
-            quality={quality}
-            setFormat={(format: string) => setFormatter(format)}
-            setQualityValue={(quality: number) => setQualityValue(quality)}
-          />
-          <Button
-            radius="full"
-            className="mt-4 w-40"
-            color="primary"
-            isLoading={loading}
-            onClick={convert}
-          >
-            Convert
-          </Button>
-          <Table
-            isConverting={loading}
-            files={userFiles}
-            downloads={() => downloadImages()}
-            download={(item: userFile) => downloadImage(item)}
-            clear={() => setUserFiles([])}
-          />
-        </>
-      ) : null}
+      <div className="space-y-6">
+        <Upload onHandleFiles={handleFiles} isDisabled={loading} />
+        {userFiles.length > 0 ? (
+          <>
+            <div className="space-y-4 rounded-lg border border-border bg-card/50 backdrop-blur-sm p-4 shadow-sm transition-all duration-300">
+              <Config
+                format={format}
+                quality={quality}
+                setFormat={setFormatter}
+                setQualityValue={setQualityValue}
+              />
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  radius="full"
+                  className="min-w-40"
+                  color="primary"
+                  isLoading={loading}
+                  onClick={convert}
+                  disabled={loading}
+                >
+                  {loading ? t("converting") : t("convertAll")}
+                </Button>
+                {hasConvertedFiles && (
+                  <Button
+                    radius="full"
+                    className="min-w-40"
+                    color="success"
+                    variant="bordered"
+                    onClick={downloadImages}
+                    disabled={loading}
+                  >
+                    {t("downloadAll")}
+                  </Button>
+                )}
+                {userFiles.length > 0 && (
+                  <Button
+                    radius="full"
+                    className="min-w-40"
+                    color="danger"
+                    variant="light"
+                    onClick={clearAllFiles}
+                    disabled={loading}
+                  >
+                    {t("clearAll")}
+                  </Button>
+                )}
+              </div>
+            </div>
+            <Table
+              isConverting={loading}
+              files={userFiles}
+              downloads={downloadImages}
+              download={downloadImage}
+              clear={clearAllFiles}
+            />
+          </>
+        ) : (
+          <div className="rounded-lg border border-dashed border-border bg-muted/30 px-6 py-8 text-center transition-colors duration-300">
+            <p className="text-sm text-muted-foreground">
+              {t("noFiles")}
+            </p>
+          </div>
+        )}
+      </div>
     </>
   );
 }

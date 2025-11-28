@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/table";
+import { useTranslations } from "next-intl";
 
 import { userFile } from "@/definitions";
 
@@ -34,6 +35,7 @@ export default function TableElement({
   downloads: () => void;
   download: (file: userFile) => void;
 }) {
+  const t = useTranslations("Table");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -47,6 +49,11 @@ export default function TableElement({
   const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.max(1, Math.ceil(files.length / itemsPerPage));
+
+  // 计算转换进度
+  const convertedCount = files.filter((file) => file.isConverted).length;
+  const totalCount = files.length;
+  const conversionProgress = totalCount > 0 ? Math.round((convertedCount / totalCount) * 100) : 0;
 
   function clearImages() {
     clear();
@@ -98,8 +105,8 @@ export default function TableElement({
   return (
     <div className="overflow-x-auto">
       <div className="sm:flex sm:items-center sm:justify-between">
-        <h2 className="text-lg font-medium text-gray-800 dark:text-white">
-          Photos uploaded ({files.length} files)
+        <h2 className="text-lg font-medium text-foreground">
+          {t("photosUploaded")} ({t("filesCount", { count: files.length })})
         </h2>
 
         <div className="mb-2 flex items-center gap-x-3">
@@ -109,7 +116,7 @@ export default function TableElement({
             color="primary"
             onClick={clearImages}
           >
-            Clear All
+            {t("clearAll")}
           </Button>
 
           <Button
@@ -118,18 +125,38 @@ export default function TableElement({
             isDisabled={isConverting || !hasConvertedFiles}
             onClick={downloadImages}
           >
-            Download All
+            {t("downloadAll")}
           </Button>
         </div>
       </div>
 
+      {/* 统一的转换进度条 */}
+      {isConverting && (
+        <div className="my-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <div className="mb-2 flex items-center justify-between text-sm">
+            <span className="font-medium text-foreground">
+              {t("convertingFiles")}
+            </span>
+            <span className="text-muted-foreground">
+              {t("progress", { current: convertedCount, total: totalCount, percent: conversionProgress })}
+            </span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
+              style={{ width: `${conversionProgress}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
+
       <div className="p-2">
         <Table aria-label="文件列表">
           <TableHeader>
-            <TableColumn>Name</TableColumn>
-            <TableColumn>Size</TableColumn>
-            <TableColumn>Converted Size</TableColumn>
-            <TableColumn>Action</TableColumn>
+            <TableColumn>{t("name")}</TableColumn>
+            <TableColumn>{t("size")}</TableColumn>
+            <TableColumn>{t("convertedSize")}</TableColumn>
+            <TableColumn width="220">{t("action")}</TableColumn>
           </TableHeader>
           <TableBody>
             {currentItems.map((file) => (
@@ -140,49 +167,43 @@ export default function TableElement({
                   {file.isConverted ? (
                     file.convertedSize
                   ) : file.error ? (
-                    <span className="text-red-500 dark:text-red-400">
+                    <span className="text-destructive font-medium">
                       {file.error}
                     </span>
-                  ) : file.progress ? (
-                    <div className="h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                      <div
-                        className="h-2.5 rounded-full bg-blue-600"
-                        style={{ width: `${file.progress}%` }}
-                      ></div>
-                    </div>
                   ) : isConverting ? (
-                    "Converting..."
+                    <span className="text-muted-foreground">{t("converting")}</span>
                   ) : (
-                    "Waiting"
+                    <span className="text-muted-foreground">{t("waiting")}</span>
                   )}
                 </TableCell>
                 <TableCell>
-                  {file.isConverted ? (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="light"
-                        isDisabled={!file.convertedFile}
-                        onClick={() => downloadImage(file)}
-                      >
-                        Download
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="light"
-                        onClick={() => previewImage(file)}
-                        className="ml-2"
-                      >
-                        Preview
-                      </Button>
-                    </>
-                  ) : file.error ? (
-                    <span className="text-red-500 dark:text-red-400">
-                      {file.error}
-                    </span>
-                  ) : (
-                    "Waiting..."
-                  )}
+                  <div className="w-40">
+                    {file.isConverted ? (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="light"
+                          isDisabled={!file.convertedFile}
+                          onClick={() => downloadImage(file)}
+                        >
+                          {t("download")}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="light"
+                          onClick={() => previewImage(file)}
+                        >
+                          {t("preview")}
+                        </Button>
+                      </div>
+                    ) : file.error ? (
+                      <span className="text-destructive font-medium">
+                        {file.error}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">{t("waiting")}</span>
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -190,30 +211,30 @@ export default function TableElement({
         </Table>
       </div>
 
-      <Modal isOpen={isOpen} onClose={closePreview} size="xl">
+      <Modal isOpen={isOpen} onClose={closePreview} size="lg">
         <ModalContent>
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 {previewFile?.name}
               </ModalHeader>
-              <ModalBody>
+              <ModalBody className="flex items-center justify-center p-4">
                 <Image
                   src={previewFile?.url || ""}
-                  alt={previewFile?.name || "预览图片"}
-                  className="h-auto max-w-full"
+                  alt={previewFile?.name || t("previewImage")}
+                  className="max-h-[60vh] w-auto object-contain"
                 />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={closePreview}>
-                  Close
+                  {t("close")}
                 </Button>
                 <Button
                   color="primary"
                   isDisabled={!previewFile?.convertedFile}
                   onPress={() => previewFile && download(previewFile)}
                 >
-                  Download
+                  {t("download")}
                 </Button>
               </ModalFooter>
             </>
@@ -229,7 +250,7 @@ export default function TableElement({
           isDisabled={disablePrev}
           onClick={prev}
         >
-          Previous
+          {t("previous")}
         </Button>
 
         <Button
@@ -239,7 +260,7 @@ export default function TableElement({
           isDisabled={disableNext}
           onClick={next}
         >
-          Next
+          {t("next")}
         </Button>
       </div>
     </div>

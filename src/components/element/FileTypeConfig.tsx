@@ -1,34 +1,39 @@
 "use client";
+import { memo, useCallback } from "react";
 import { Button, ButtonGroup } from "@nextui-org/button";
 import { Slider } from "@nextui-org/slider";
+import { useTranslations } from "next-intl";
 
-export default function FileTypeConfig({
-  format,
-  quality,
-  setFormat,
-  setQualityValue,
-}: {
+interface FileTypeConfigProps {
   format: string;
   quality: number;
   setFormat: (format: string) => void;
   setQualityValue: (quality: number) => void;
-}) {
-  function toggleFormat(convertFormat: string) {
-    setFormat(convertFormat);
-  }
+}
 
-  function slideQuality(quality: number) {
+function FileTypeConfig({
+  format,
+  quality,
+  setFormat,
+  setQualityValue,
+}: FileTypeConfigProps) {
+  const t = useTranslations("Config");
+  const toggleFormat = useCallback((convertFormat: string) => {
+    setFormat(convertFormat);
+  }, [setFormat]);
+
+  const slideQuality = useCallback((quality: number) => {
     setQualityValue(quality);
-  }
+  }, [setQualityValue]);
   return (
     <section className="py-4">
       <div>
         <div>
           <label
             htmlFor="format-btn"
-            className="mb-2 block text-lg font-medium text-gray-700"
+            className="mb-2 block text-lg font-medium text-foreground"
           >
-            Convert to
+            {t("convertTo")}
           </label>
         </div>
 
@@ -56,7 +61,7 @@ export default function FileTypeConfig({
 
       <div className="mt-4">
         <Slider
-          label="Quality"
+          label={t("quality")}
           step={0.01}
           maxValue={1}
           minValue={0}
@@ -67,7 +72,7 @@ export default function FileTypeConfig({
           }}
           classNames={{
             labelWrapper: "mb-2",
-            label: "text-lg font-medium text-gray-700 mb-2",
+            label: "text-lg font-medium text-foreground mb-2",
             value: "",
             base: " w-4/5",
           }}
@@ -76,3 +81,5 @@ export default function FileTypeConfig({
     </section>
   );
 }
+
+export default memo(FileTypeConfig);

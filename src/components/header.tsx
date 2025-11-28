@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
+import clsx from "clsx";
+import { useLocale, useTranslations } from "next-intl";
 
 import LanguageToggle from "./language-toggle";
 import { ModeToggle } from "./theme-toggle";
@@ -9,40 +10,39 @@ import { Locale } from "@/i18n.config";
 
 const Header = () => {
   const locale = useLocale() as Locale;
-
+  const t = useTranslations("Header");
   const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const offset = window.scrollY;
-      setIsScrolled(offset > 100); // 调整阈值
-    };
+  const handleScroll = useCallback(() => {
+    const offset = window.scrollY;
+    setIsScrolled(offset > 100);
+  }, []);
 
-    window.addEventListener("scroll", handleScroll);
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [handleScroll]);
   return (
     <header
-      className={`top-0 z-50 flex w-full items-center ${
+      className={clsx(
+        "sticky top-0 z-40 w-full transition-all duration-300",
         isScrolled
-          ? "shadow-sticky bg-white/80 backdrop-blur-sm dark:bg-slate-800/80"
-          : "bg-transparent dark:bg-transparent"
-      }`}
+          ? "border-b border-border bg-background/80 backdrop-blur-md shadow-sm supports-[backdrop-filter]:bg-background/60"
+          : "bg-transparent"
+      )}
     >
-      <div className="container max-w-[1430px]">
-        <h1 className="absolute left-1/2 -translate-x-1/2 pt-4 text-center text-2xl font-extrabold tracking-tight lg:text-3xl">
-          HEIC/HEIF Simple, Free, and Offline Converter
-        </h1>
-        <div className="relative -mx-4 flex items-center justify-between">
-          <div></div>
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between py-4">
+          <h1 className="text-center text-lg font-bold tracking-tight sm:text-xl md:text-2xl lg:text-3xl">
+            {t("title")}
+          </h1>
 
-          <div className="flex w-32 items-center justify-around py-4">
+          <div className="flex items-center justify-center gap-3">
+            <LanguageToggle locale={locale} />
             <ModeToggle />
-
-            {/* <LanguageToggle locale={locale} /> */}
           </div>
         </div>
       </div>
