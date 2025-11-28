@@ -101,8 +101,6 @@
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install",
   "env": {
-    "NEXT_PUBLIC_GTAG": {
-      "description": "Google Analytics Measurement ID"
-    }
+    "NEXT_PUBLIC_GTAG": ""
   }
 }
