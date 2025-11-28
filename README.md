@@ -32,17 +32,17 @@ nextjs-template/
 ### 安装依赖
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 本地开发
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ### 打包
 
 ```bash
-npm run build
+pnpm build
 ```
