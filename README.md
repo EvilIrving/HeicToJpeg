@@ -29,8 +29,6 @@ nextjs-template/
 
 ## 使用
 
-### 安装依赖发撒多他饿大了；gsak‘ 管理；啊额飞机； 就哦了个阿瑞琥珀金牛万达日平均哦额头；看呢情况吗eqr/’
-
 ```bash
 pnpm install
 ```
